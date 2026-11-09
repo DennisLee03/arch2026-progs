@@ -14,15 +14,16 @@ gcd_u32_asm:
 
     li t0, 0         # k=0, shift amount
 
+    b_eq_0:
+    bne a1, zero, a_eq_0   # if b == 0: return result
+    ret
+    a_eq_0:
+    bne a0, zero, loop     # if a == 0: return result
+    mv a0, a1              # a == 0
+    ret
+
     loop:
 
-        eq_0:
-        beq a1, zero, result   # if b == 0: return result
-        bne a0, zero, evens    # if a == 0: return result
-        mv a0, a1              # a == 0
-        j result
-
-        evens:
         andi t1, a0, 1
         andi t2, a1, 1
         or t3, t1, t2          # 0(even) or 0(even) = 0 -> both even
@@ -44,11 +45,15 @@ gcd_u32_asm:
         j loop
 
         odds:
-        bltu a1, a0, a_minus_b
-        sub a1, a1, a0
-        j loop
-        a_minus_b:
-        sub a0, a0, a1
+        bgeu a1, a0, b_minus_a   # if b >= a
+        mv t1, a0
+        mv a0, a1
+        mv a1, t1
+        b_minus_a:
+        sub a1, a1, a0           # b = b-a
+
+        # check b == 0
+        beq a1, zero, result
         j loop
 
     result:
