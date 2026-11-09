@@ -26,23 +26,24 @@ gcd_u32_asm:
         andi t1, a0, 1
         andi t2, a1, 1
         or t3, t1, t2          # 0(even) or 0(even) = 0 -> both even
-        bne t3, zero, loop
+        bne t3, zero, a_to_odd
         srli a0, a0, 1
         srli a1, a1, 1
         addi t0, t0, 1
         j ctz_loop
 
+    # make a odd
+    a_to_odd:
+    bne t1, zero, loop
+    srli a0, a0, 1
+    andi t1, a0, 1
+    j a_to_odd
+
+    # a is always odd
     loop:
-        andi t1, a0, 1
-        andi t2, a1, 1
-        xor t3, t1, t2         # 0(even) xor 1(odd) = 1 -> gcd(2a, b)
-        beq t3, zero, odds
-        beq t1, zero, a_even_b_odd
-        a_odd_b_even:
+        andi t1, a1, 1         # t1 = b & 1
+        bne t1, zero, odds     # if b is odd, go to odds 
         srli a1, a1, 1
-        j loop
-        a_even_b_odd:  
-        srli a0, a0, 1
         j loop
 
         odds:
