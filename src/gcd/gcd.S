@@ -18,22 +18,23 @@ gcd_u32_asm:
     bne a1, zero, a_eq_0   # if b == 0: return result
     ret
     a_eq_0:
-    bne a0, zero, loop     # if a == 0: return result
+    bne a0, zero, ctz_loop     # if a == 0: return result
     mv a0, a1              # a == 0
     ret
 
-    loop:
-
+    ctz_loop:
         andi t1, a0, 1
         andi t2, a1, 1
         or t3, t1, t2          # 0(even) or 0(even) = 0 -> both even
-        bne t3, zero, odd_even
+        bne t3, zero, loop
         srli a0, a0, 1
         srli a1, a1, 1
         addi t0, t0, 1
-        j loop
+        j ctz_loop
 
-        odd_even:
+    loop:
+        andi t1, a0, 1
+        andi t2, a1, 1
         xor t3, t1, t2         # 0(even) xor 1(odd) = 1 -> gcd(2a, b)
         beq t3, zero, odds
         beq t1, zero, a_even_b_odd
