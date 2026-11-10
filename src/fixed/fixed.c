@@ -1,8 +1,6 @@
 #include "fixed.h"
 
-/**
- *
- */
+/* Compute `a` + `b` and count number of iterations of the loop */
 uint32_t op1(uint32_t a, uint32_t b, int *n)
 {
     *n = 0;
@@ -15,11 +13,13 @@ uint32_t op1(uint32_t a, uint32_t b, int *n)
     return a;
 }
 
+/* Compute `a` - `b` */
 uint32_t op2(uint32_t a, uint32_t b)
 {
     return a - b;
 }
 
+/* Compute average of `a` and `b` without overflow */
 uint32_t op3(uint32_t a, uint32_t b)
 {
     // (a >> 1) + (b >> 1) + (a & b & 1)
