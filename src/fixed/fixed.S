@@ -64,11 +64,11 @@ op3_asm:
 # a1: `b`
     .equ HALF_Q, 524288
 q_mul_asm:
-    # 1. record sign of the product (sltu)
+    # record sign of the product (sltu)
     xor t0, a0, a1
     slt t0, t0, zero 
 
-    # 2. absolute value without branch (m = srai x >> 31, |x| = (x XOR m) - m)
+    # absolute value without branch (m = srai x >> 31, |x| = (x XOR m) - m)
     srai t1, a0, 31
     xor t4, a0, t1
     sub t4, t4, t1
@@ -77,7 +77,14 @@ q_mul_asm:
     sub t5, t5, t1
     add t6, zero, zero
 
+    # swap smaller to loop variable
+    bgeu t5, t4, shift_and_add        # if t5 >= t4 already, goto shift and add
+    mv t1, t5
+    mv t5, t4
+    mv t4, t1
+
     # shift and add: in acc_{hi, lo}
+    shift_and_add:
     add t2, zero, zero
     add t3, zero, zero
     beq t4, zero, q_mul_end
