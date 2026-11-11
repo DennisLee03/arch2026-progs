@@ -15,8 +15,16 @@
     .type   op1_asm, @function
     .align  2
 op1_asm:
-    sw      zero, 0(a2)
-    li      a0, 0
+    addi t0, zero, 0           # count for n
+    beq a1, zero, op1_end
+    op1_loop:
+        and t1, a0, a1         # t1 = a & b
+        xor a0, a0, a1         # a = a ^ b
+        slli a1, t1, 1         # b = (a & b) << 1
+        addi t0, t0, 1         # count++
+        bne a1, zero, op1_loop
+    op1_end:
+    sw t0, 0(a2)               # *n = count
     ret
     .size   op1_asm, .-op1_asm
 
@@ -24,7 +32,7 @@ op1_asm:
     .type   op2_asm, @function
     .align  2
 op2_asm:
-    li      a0, 0
+    sub a0, a0, a1
     ret
     .size   op2_asm, .-op2_asm
 
@@ -32,7 +40,11 @@ op2_asm:
     .type   op3_asm, @function
     .align  2
 op3_asm:
-    li      a0, 0
+    # (a & b) + ((a ^ b) >> 1)
+    and t0, a0, a1
+    xor t1, a0, a1
+    srli t1, t1, 1
+    add a0, t0, t1
     ret
     .size   op3_asm, .-op3_asm
 
